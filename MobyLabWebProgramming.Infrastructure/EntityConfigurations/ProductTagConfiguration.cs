@@ -14,6 +14,7 @@ public class ProductTagConfiguration : IEntityTypeConfiguration<ProductTag>
         builder.Property(e => e.Tag)
             .HasMaxLength(255)
             .IsRequired();
+        builder.HasAlternateKey(e => e.Tag);
         builder.Property(e => e.CreatedAt)
             .IsRequired();
         builder.Property(e => e.UpdatedAt)

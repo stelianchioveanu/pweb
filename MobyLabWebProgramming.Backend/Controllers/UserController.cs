@@ -103,12 +103,23 @@ public class UserController : AuthorizedController // Here we use the Authorized
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<RequestResponse>> AddProductTag([FromBody] ProductTagDTO tag)
+    public async Task<ActionResult<RequestResponse>> AddProductTag([FromBody] AddProductTagDTO tag)
     {
         var currentUser = await GetCurrentUser();
 
         return currentUser.Result != null ?
             this.FromServiceResponse(await UserService.AddProductTag(tag, currentUser.Result)) :
+            this.ErrorMessageResult(currentUser.Error);
+    }
+
+    [Authorize]
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult<RequestResponse>> DeleteProductTag([FromRoute] Guid id)
+    {
+        var currentUser = await GetCurrentUser();
+
+        return currentUser.Result != null ?
+            this.FromServiceResponse(await UserService.DeleteProductTag(id, currentUser.Result)) :
             this.ErrorMessageResult(currentUser.Error);
     }
 }

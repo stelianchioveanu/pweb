@@ -158,14 +158,14 @@ public class UserService : IUserService
         return ServiceResponse.ForSuccess();
     }
 
-    public async Task<ServiceResponse> AddProductTag(ProductTagDTO tag, UserDTO? requestingUser, CancellationToken cancellationToken = default)
+    public async Task<ServiceResponse> AddProductTag(AddProductTagDTO tag, UserDTO? requestingUser, CancellationToken cancellationToken = default)
     {
         if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
         {
             return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or personnel can add product tags!", ErrorCodes.CannotAdd));
         }
 
-        var result = await _repository.GetAsync(new UserSpec(tag.Tag), cancellationToken);
+        var result = await _repository.GetAsync(new ProductTagSpec(tag.Tag), cancellationToken);
 
         if (result != null)
         {
@@ -176,6 +176,18 @@ public class UserService : IUserService
         {
             Tag = tag.Tag
         }, cancellationToken);
+
+        return ServiceResponse.ForSuccess();
+    }
+
+    public async Task<ServiceResponse> DeleteProductTag(Guid id, UserDTO? requestingUser, CancellationToken cancellationToken = default)
+    {
+        if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or personnel can delete product tags!", ErrorCodes.CannotAdd));
+        }
+
+        await _repository.DeleteAsync<ProductTag>(id, cancellationToken);
 
         return ServiceResponse.ForSuccess();
     }
