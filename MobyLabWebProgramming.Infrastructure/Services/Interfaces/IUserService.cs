@@ -43,4 +43,6 @@ public interface IUserService
     public Task<ServiceResponse> DeleteUser(Guid id, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 
     public Task<ServiceResponse> Register(RegisterDTO register, CancellationToken cancellationToken = default);
+
+    public Task<ServiceResponse> AddProductTag(ProductTagDTO tag, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 }

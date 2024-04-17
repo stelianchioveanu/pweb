@@ -3,6 +3,6 @@
 namespace MobyLabWebProgramming.Core.Entities;
 public class ProductTag : BaseEntity
 {
-    public ProductTagEnum Tag { get; set; } = default!;
+    public string Tag { get; set; } = default!;
     public ICollection<Product>? Products { get; set; }
 }

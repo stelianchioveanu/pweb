@@ -100,4 +100,15 @@ public class UserController : AuthorizedController // Here we use the Authorized
             this.FromServiceResponse(await UserService.DeleteUser(id)) :
             this.ErrorMessageResult(currentUser.Error);
     }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<RequestResponse>> AddProductTag([FromBody] ProductTagDTO tag)
+    {
+        var currentUser = await GetCurrentUser();
+
+        return currentUser.Result != null ?
+            this.FromServiceResponse(await UserService.AddProductTag(tag, currentUser.Result)) :
+            this.ErrorMessageResult(currentUser.Error);
+    }
 }

@@ -113,7 +113,7 @@ public class UserService : IUserService
             return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or the own user can update the user!", ErrorCodes.CannotUpdate));
         }
 
-        var entity = await _repository.GetAsync(new UserSpec(user.Id), cancellationToken); 
+        var entity = await _repository.GetAsync(new UserSpec(user.Id), cancellationToken);
 
         if (entity != null) // Verify if the user is not found, you cannot update an non-existing entity.
         {
@@ -153,6 +153,28 @@ public class UserService : IUserService
             Name = register.Name,
             Role = UserRoleEnum.Client,
             Password = PasswordUtils.HashPassword(register.Password)
+        }, cancellationToken);
+
+        return ServiceResponse.ForSuccess();
+    }
+
+    public async Task<ServiceResponse> AddProductTag(ProductTagDTO tag, UserDTO? requestingUser, CancellationToken cancellationToken = default)
+    {
+        if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or personnel can add product tags!", ErrorCodes.CannotAdd));
+        }
+
+        var result = await _repository.GetAsync(new UserSpec(tag.Tag), cancellationToken);
+
+        if (result != null)
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.Conflict, "Tag already exists!", ErrorCodes.TagAlreadyExists));
+        }
+
+        await _repository.AddAsync(new ProductTag
+        {
+            Tag = tag.Tag
         }, cancellationToken);
 
         return ServiceResponse.ForSuccess();
