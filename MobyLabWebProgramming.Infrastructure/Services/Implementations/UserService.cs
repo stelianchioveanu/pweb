@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Win32;
 using MobyLabWebProgramming.Core.Constants;
 using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Entities;
@@ -142,6 +144,11 @@ public class UserService : IUserService
     {
         var result = await _repository.GetAsync(new UserSpec(register.Email), cancellationToken);
 
+        if (register == null || register.Email.IsNullOrEmpty() || register.Name.IsNullOrEmpty() || register.Password.IsNullOrEmpty())
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Every input should have at least 1 character!", ErrorCodes.WrongInputs));
+        }
+
         if (result != null)
         {
             return ServiceResponse.FromError(CommonErrors.UserAlreadyExists);
@@ -158,11 +165,16 @@ public class UserService : IUserService
         return ServiceResponse.ForSuccess();
     }
 
-    public async Task<ServiceResponse> AddProductTag(AddProductTagDTO tag, UserDTO? requestingUser, CancellationToken cancellationToken = default)
+    public async Task<ServiceResponse> AddProductTag(ProductTagAddDTO tag, UserDTO? requestingUser, CancellationToken cancellationToken = default)
     {
         if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
         {
             return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or personnel can add product tags!", ErrorCodes.CannotAdd));
+        }
+
+        if (tag == null || tag.Tag.IsNullOrEmpty())
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "The tag should have at least 1 character!", ErrorCodes.WrongTag));
         }
 
         var result = await _repository.GetAsync(new ProductTagSpec(tag.Tag), cancellationToken);
@@ -197,5 +209,42 @@ public class UserService : IUserService
         var result = await _repository.PageAsync(pagination, new ProductTagProjectionSpec(pagination.Search), cancellationToken);
 
         return ServiceResponse<PagedResponse<ProductTagDTO>>.ForSuccess(result);
+    }
+
+    public async Task<ServiceResponse> UpdateAddress(AddressUpdateDTO address, UserDTO? requestingUser, CancellationToken cancellationToken = default)
+    {
+        if (requestingUser == null)
+        {
+            return ServiceResponse.FromError(CommonErrors.UserNotFound);
+        }
+
+        if (address == null || address.Number == 0 || address.StreetName.IsNullOrEmpty() || address.StreetName.IsNullOrEmpty() || address.PhoneNumber.IsNullOrEmpty())
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Every input should have at least 1 character!", ErrorCodes.WrongInputs));
+        }
+
+        var oldAddress = await _repository.GetAsync(new AddressSpec(requestingUser.Id), cancellationToken);
+
+        if (oldAddress != null)
+        {
+            oldAddress.StreetName = address.StreetName;
+            oldAddress.City = address.City;
+            oldAddress.Number = address.Number;
+            oldAddress.PhoneNumber = address.PhoneNumber;
+
+            await _repository.UpdateAsync(oldAddress, cancellationToken);
+        } else
+        {
+            await _repository.AddAsync(new Address
+            {
+                StreetName = address.StreetName,
+                City = address.City,
+                Number = address.Number,
+                PhoneNumber = address.PhoneNumber,
+                UserId = requestingUser.Id,
+            }, cancellationToken);
+        }
+
+        return ServiceResponse.ForSuccess();
     }
 }

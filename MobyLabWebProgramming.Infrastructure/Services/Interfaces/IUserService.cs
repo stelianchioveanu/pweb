@@ -44,9 +44,11 @@ public interface IUserService
 
     public Task<ServiceResponse> Register(RegisterDTO register, CancellationToken cancellationToken = default);
 
-    public Task<ServiceResponse> AddProductTag(AddProductTagDTO tag, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse> AddProductTag(ProductTagAddDTO tag, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 
     public Task<ServiceResponse> DeleteProductTag(Guid id, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 
     public Task<ServiceResponse<PagedResponse<ProductTagDTO>>> GetProductTags(PaginationSearchQueryParams pagination, CancellationToken cancellationToken = default);
+
+    public Task<ServiceResponse> UpdateAddress(AddressUpdateDTO address, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 }

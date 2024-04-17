@@ -18,5 +18,7 @@ public enum ErrorCodes
     CannotUpdate,
     CannotDelete,
     MailSendFailed,
-    TagAlreadyExists
+    TagAlreadyExists,
+    WrongTag,
+    WrongInputs
 }

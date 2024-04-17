@@ -134,5 +134,14 @@ public class UserController : AuthorizedController // Here we use the Authorized
             this.ErrorMessageResult<PagedResponse<ProductTagDTO>>(currentUser.Error);
     }
 
+    [Authorize]
+    [HttpPut]
+    public async Task<ActionResult<RequestResponse>> UpdateAddress([FromBody] AddressUpdateDTO address)
+    {
+        var currentUser = await GetCurrentUser();
 
+        return currentUser.Result != null ?
+            this.FromServiceResponse(await UserService.UpdateAddress(address, currentUser.Result)) :
+            this.ErrorMessageResult(currentUser.Error);
+    }
 }
