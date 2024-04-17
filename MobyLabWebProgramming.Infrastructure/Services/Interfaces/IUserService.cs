@@ -48,5 +48,5 @@ public interface IUserService
 
     public Task<ServiceResponse> DeleteProductTag(Guid id, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 
-    //public Task<ServiceResponse> GetProductTags(ProductTagDTO tag, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse<PagedResponse<ProductTagDTO>>> GetProductTags(PaginationSearchQueryParams pagination, CancellationToken cancellationToken = default);
 }

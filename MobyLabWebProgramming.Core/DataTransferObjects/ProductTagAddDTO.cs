@@ -2,7 +2,7 @@
 
 namespace MobyLabWebProgramming.Core.DataTransferObjects;
 
-public class AddProductTagDTO
+public class ProductTagAddDTO
 {
     public string Tag { get; set; } = default!;
 }

@@ -191,4 +191,11 @@ public class UserService : IUserService
 
         return ServiceResponse.ForSuccess();
     }
+
+    public async Task<ServiceResponse<PagedResponse<ProductTagDTO>>> GetProductTags(PaginationSearchQueryParams pagination, CancellationToken cancellationToken = default)
+    {
+        var result = await _repository.PageAsync(pagination, new ProductTagProjectionSpec(pagination.Search), cancellationToken);
+
+        return ServiceResponse<PagedResponse<ProductTagDTO>>.ForSuccess(result);
+    }
 }

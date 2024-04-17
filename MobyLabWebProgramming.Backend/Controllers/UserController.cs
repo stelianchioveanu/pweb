@@ -103,7 +103,7 @@ public class UserController : AuthorizedController // Here we use the Authorized
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<RequestResponse>> AddProductTag([FromBody] AddProductTagDTO tag)
+    public async Task<ActionResult<RequestResponse>> AddProductTag([FromBody] ProductTagAddDTO tag)
     {
         var currentUser = await GetCurrentUser();
 
@@ -122,4 +122,17 @@ public class UserController : AuthorizedController // Here we use the Authorized
             this.FromServiceResponse(await UserService.DeleteProductTag(id, currentUser.Result)) :
             this.ErrorMessageResult(currentUser.Error);
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<RequestResponse<PagedResponse<ProductTagDTO>>>> GetTags([FromQuery] PaginationSearchQueryParams pagination)
+    {
+        var currentUser = await GetCurrentUser();
+
+        return currentUser.Result != null ?
+            this.FromServiceResponse(await UserService.GetProductTags(pagination)) :
+            this.ErrorMessageResult<PagedResponse<ProductTagDTO>>(currentUser.Error);
+    }
+
+
 }
