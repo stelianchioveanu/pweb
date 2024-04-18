@@ -20,12 +20,14 @@ public sealed class UserFileProjectionSpec : BaseSpec<UserFileProjectionSpec, Us
         Id = e.Id,
         Name = e.Name,
         Description = e.Description,
-        User = new()
+        Product = new()
         {
-            Id = e.User.Id,
-            Email = e.User.Email,
-            Name = e.User.Name,
-            Role = e.User.Role
+            Id = e.Product.Id,
+            Name = e.Product.Name,
+            Description = e.Product.Description,
+            Price  = e.Product.Price,
+            UserId = e.Product.UserId,
+            User = e.Product.User
         },
         CreatedAt = e.CreatedAt,
         UpdatedAt = e.UpdatedAt
@@ -46,7 +48,6 @@ public sealed class UserFileProjectionSpec : BaseSpec<UserFileProjectionSpec, Us
 
         var searchExpr = $"%{search.Replace(" ", "%")}%";
 
-        Query.Where(e => EF.Functions.ILike(e.Name, searchExpr) ||
-                         EF.Functions.ILike(e.Description, searchExpr));
+        Query.Where(e => EF.Functions.ILike(e.Name, searchExpr));
     }
 }

@@ -8,7 +8,6 @@ public class Product  : BaseEntity
     public Guid UserId { get; set; }
     public User User { get; set; } = default!;
 
-    public ICollection<ProductTag>? ProductTags { get; set; }
-
-    public UserFile UserFile { get; set; } = default!;
+    public ICollection<ProductTag>? ProductTags { get; set; } = default!;
+    public ICollection<UserFile>? UserFiles { get; set; } = default!;
 }

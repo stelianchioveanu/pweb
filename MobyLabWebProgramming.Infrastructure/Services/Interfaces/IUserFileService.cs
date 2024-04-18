@@ -18,9 +18,9 @@ public interface IUserFileService
     /// <summary>
     /// SaveFile saves a file on the file storage and also saves the path to the database for a requesting user.
     /// </summary>
-    public Task<ServiceResponse> SaveFile(UserFileAddDTO file, UserDTO requestingUser, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse> SaveFile(UserFileAddDTO file, UserDTO requestingUser, ProductDTO product, CancellationToken cancellationToken = default);
     /// <summary>
     /// GetFileDownload gets a file stream for a given file found by the id in the database.
     /// </summary>
-    public Task<ServiceResponse<FileDTO>> GetFileDownload(Guid id, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse<FileDTO>> GetFileDownload(Guid id, ProductDTO product, CancellationToken cancellationToken = default);
 }

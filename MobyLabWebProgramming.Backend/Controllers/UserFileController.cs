@@ -6,7 +6,6 @@ using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Infrastructure.Authorization;
 using MobyLabWebProgramming.Infrastructure.Extensions;
 using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
-using System.Net.Mime;
 
 namespace MobyLabWebProgramming.Backend.Controllers;
 
@@ -48,7 +47,7 @@ public class UserFileController : AuthorizedController
     /// <summary>
     /// This method adds a user file from a multipart/form-data request.
     /// </summary>
-    [Authorize]
+    /*[Authorize]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)] // Sets the maximum size limit for the form body to override the default value
     [RequestSizeLimit(MaxFileSize)] // Sets the maximum size limit for the entire request to override the default value
     [HttpPost] // This attribute will make the controller respond to a HTTP POST request on the route /api/UserFile/Add.
@@ -60,12 +59,12 @@ public class UserFileController : AuthorizedController
         return currentUser.Result != null ?
             this.FromServiceResponse(await _userFileService.SaveFile(form, currentUser.Result)) :
             this.ErrorMessageResult(currentUser.Error);
-    }
+    }*/
 
     /// <summary>
     /// This method downloads a user file.
     /// </summary>
-    [Authorize]
+    /*[Authorize]
     [HttpGet("{id:guid}")]
     [Produces(MediaTypeNames.Application.Octet, MediaTypeNames.Application.Json)] // Sets the possible response MIME types because on success a binary file is send while on error a error JSON is send.
     [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)] // On success a FileResult should be send. 
@@ -83,5 +82,5 @@ public class UserFileController : AuthorizedController
         return file.Result != null ? 
             File(file.Result.Stream, MediaTypeNames.Application.Octet, file.Result.Name) : // The File method of the controller base returns a response from a stream with the given media type and filename.
             this.ErrorMessageResult(currentUser.Error);
-    }
+    }*/
 }

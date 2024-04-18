@@ -37,7 +37,7 @@ public class UserFileService : IUserFileService
         return ServiceResponse<PagedResponse<UserFileDTO>>.ForSuccess(result);
     }
 
-    public async Task<ServiceResponse> SaveFile(UserFileAddDTO file, UserDTO requestingUser, CancellationToken cancellationToken = default)
+    public async Task<ServiceResponse> SaveFile(UserFileAddDTO file, UserDTO requestingUser, ProductDTO product, CancellationToken cancellationToken = default)
     {
         var fileName = _fileRepository.SaveFile(file.File, GetFileDirectory(requestingUser.Id)); // First save the file on the filesystem.
 
@@ -51,18 +51,18 @@ public class UserFileService : IUserFileService
             Name = file.File.FileName,
             Description = file.Description,
             Path = fileName.Result,
-            UserId = requestingUser.Id
+            ProductId = product.Id
         }, cancellationToken); // When the file is saved on the filesystem save the returned file path in the database to identify the file.
 
         return ServiceResponse.ForSuccess();
     }
 
-    public async Task<ServiceResponse<FileDTO>> GetFileDownload(Guid id, CancellationToken cancellationToken = default) // If not successful respond with the error.
+    public async Task<ServiceResponse<FileDTO>> GetFileDownload(Guid id, ProductDTO product, CancellationToken cancellationToken = default) // If not successful respond with the error.
     {
         var userFile = await _repository.GetAsync<UserFile>(id, cancellationToken); // First get the file entity from the database to find the location on the filesystem.
 
         return userFile != null ? 
-            _fileRepository.GetFile(Path.Join(GetFileDirectory(userFile.UserId), userFile.Path), userFile.Name) : 
+            _fileRepository.GetFile(Path.Join(GetFileDirectory(product.UserId), userFile.Path), userFile.Name) : 
             ServiceResponse<FileDTO>.FromError(new(HttpStatusCode.NotFound, "File entry not found!", ErrorCodes.EntityNotFound));
     }
 }

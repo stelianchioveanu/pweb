@@ -100,48 +100,4 @@ public class UserController : AuthorizedController // Here we use the Authorized
             this.FromServiceResponse(await UserService.DeleteUser(id)) :
             this.ErrorMessageResult(currentUser.Error);
     }
-
-    [Authorize]
-    [HttpPost]
-    public async Task<ActionResult<RequestResponse>> AddProductTag([FromBody] ProductTagAddDTO tag)
-    {
-        var currentUser = await GetCurrentUser();
-
-        return currentUser.Result != null ?
-            this.FromServiceResponse(await UserService.AddProductTag(tag, currentUser.Result)) :
-            this.ErrorMessageResult(currentUser.Error);
-    }
-
-    [Authorize]
-    [HttpDelete("{id:guid}")]
-    public async Task<ActionResult<RequestResponse>> DeleteProductTag([FromRoute] Guid id)
-    {
-        var currentUser = await GetCurrentUser();
-
-        return currentUser.Result != null ?
-            this.FromServiceResponse(await UserService.DeleteProductTag(id, currentUser.Result)) :
-            this.ErrorMessageResult(currentUser.Error);
-    }
-
-    [Authorize]
-    [HttpGet]
-    public async Task<ActionResult<RequestResponse<PagedResponse<ProductTagDTO>>>> GetTags([FromQuery] PaginationSearchQueryParams pagination)
-    {
-        var currentUser = await GetCurrentUser();
-
-        return currentUser.Result != null ?
-            this.FromServiceResponse(await UserService.GetProductTags(pagination)) :
-            this.ErrorMessageResult<PagedResponse<ProductTagDTO>>(currentUser.Error);
-    }
-
-    [Authorize]
-    [HttpPut]
-    public async Task<ActionResult<RequestResponse>> UpdateAddress([FromBody] AddressUpdateDTO address)
-    {
-        var currentUser = await GetCurrentUser();
-
-        return currentUser.Result != null ?
-            this.FromServiceResponse(await UserService.UpdateAddress(address, currentUser.Result)) :
-            this.ErrorMessageResult(currentUser.Error);
-    }
 }
