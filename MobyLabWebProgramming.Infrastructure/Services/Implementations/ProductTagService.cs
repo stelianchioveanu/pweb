@@ -25,7 +25,12 @@ public class ProductTagService : IProductTagService
 
     public async Task<ServiceResponse> AddProductTag(ProductTagAddDTO tag, UserDTO? requestingUser, CancellationToken cancellationToken = default)
     {
-        if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
+        if (requestingUser == null)
+        {
+            return ServiceResponse.FromError(CommonErrors.UserNotFound);
+        }
+
+        if (requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
         {
             return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or personnel can add product tags!", ErrorCodes.CannotAdd));
         }
@@ -52,7 +57,12 @@ public class ProductTagService : IProductTagService
 
     public async Task<ServiceResponse> DeleteProductTag(Guid id, UserDTO? requestingUser, CancellationToken cancellationToken = default)
     {
-        if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
+        if (requestingUser == null)
+        {
+            return ServiceResponse.FromError(CommonErrors.UserNotFound);
+        }
+
+        if (requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
         {
             return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or personnel can delete product tags!", ErrorCodes.CannotAdd));
         }

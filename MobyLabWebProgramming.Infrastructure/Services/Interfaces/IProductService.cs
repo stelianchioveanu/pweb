@@ -6,7 +6,9 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Interfaces;
 
 public interface IProductService
 {
-    public Task<ServiceResponse> AddProduct(ProductAddDTO product, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse> AddProduct(ProductAddDTO product, IUserFileService _userFileService, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
+
+    public Task<ServiceResponse<ProductDTO>> GetProduct(Guid id, IUserFileService _userFileService, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 
     //public Task<ServiceResponse> DeleteProduct(Guid id, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 

@@ -27,7 +27,7 @@ public class ProductService : IProductService
         _repository = repository;
     }
 
-    public async Task<ServiceResponse> AddProduct(ProductAddDTO product, UserDTO? requestingUser = default, CancellationToken cancellationToken = default)
+    public async Task<ServiceResponse> AddProduct(ProductAddDTO product, IUserFileService _userFileService, UserDTO? requestingUser = default, CancellationToken cancellationToken = default)
     {
         if (requestingUser == null)
         {
@@ -64,6 +64,36 @@ public class ProductService : IProductService
             }
         }
 
+        if (product.Files != null)
+        {
+            foreach (var file in product.Files)
+            {
+                await _userFileService.SaveFile(file, newProduct, requestingUser, cancellationToken);
+            }
+        }
+
         return ServiceResponse.ForSuccess();
+    }
+
+    public async Task<ServiceResponse<ProductDTO>> GetProduct(Guid id, IUserFileService _userFileService, UserDTO? requestingUser = default, CancellationToken cancellationToken = default)
+    {
+        if (requestingUser == null)
+        {
+            return ServiceResponse<ProductDTO>.FromError(CommonErrors.UserNotFound);
+        }
+
+        var result = await _repository.GetAsync(new ProductProjectionSpec(id), cancellationToken);
+
+        if (result != null)
+        {
+            result.FilePaths = new List<string>();
+            var file = await _repository.GetAsync(new UserFileProjectionSpec(id), cancellationToken);
+            if (file != null)
+            {
+                result.FilePaths.Add(file.Path);
+            }
+        }
+
+        return ServiceResponse<ProductDTO>.ForSuccess(result);
     }
 }

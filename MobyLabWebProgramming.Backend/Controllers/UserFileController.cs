@@ -33,7 +33,7 @@ public class UserFileController : AuthorizedController
     /// Generally, if you need to get multiple values from the database use pagination if there are many entries.
     /// It will improve performance and reduce resource consumption for both client and server.
     /// </summary>
-    [Authorize]
+    /*[Authorize]
     [HttpGet] // This attribute will make the controller respond to a HTTP GET request on the route /api/UserFile/GetPage.
     public async Task<ActionResult<RequestResponse<PagedResponse<UserFileDTO>>>> GetPage([FromQuery] PaginationSearchQueryParams pagination)
     {
@@ -42,7 +42,7 @@ public class UserFileController : AuthorizedController
         return currentUser.Result != null ?
             this.FromServiceResponse(await _userFileService.GetUserFiles(pagination)) :
             this.ErrorMessageResult<PagedResponse<UserFileDTO>>(currentUser.Error);
-    }
+    }*/
 
     /// <summary>
     /// This method adds a user file from a multipart/form-data request.

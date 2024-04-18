@@ -1,4 +1,5 @@
-﻿using MobyLabWebProgramming.Core.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using MobyLabWebProgramming.Core.Entities;
 
 namespace MobyLabWebProgramming.Core.DataTransferObjects;
 
@@ -9,4 +10,5 @@ public class ProductAddDTO
     public string Description { get; set; } = default!;
     public int Price { get; set; } = default!;
     public ICollection<Guid>? Tags { get; set; } = default!;
+    public ICollection<IFormFile> Files { get; set; } = default!;
 }

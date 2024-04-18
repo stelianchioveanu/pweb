@@ -14,20 +14,33 @@ namespace MobyLabWebProgramming.Backend.Controllers;
 public class ProductController : AuthorizedController
 {
     private readonly IProductService _productService;
-    public ProductController(IUserService userService, IProductService productService) : base(userService)
+    private readonly IUserFileService _userFileService;
+    public ProductController(IUserService userService, IProductService productService, IUserFileService userFileService) : base(userService)
     {
         _productService = productService;
+        _userFileService= userFileService;
     }
 
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<RequestResponse>> AddProduct([FromBody] ProductAddDTO product)
+    public async Task<ActionResult<RequestResponse>> AddProduct([FromForm] ProductAddDTO product)
     {
         var currentUser = await GetCurrentUser();
 
         return currentUser.Result != null ?
-            this.FromServiceResponse(await _productService.AddProduct(product, currentUser.Result)) :
+            this.FromServiceResponse(await _productService.AddProduct(product, _userFileService, currentUser.Result)) :
             this.ErrorMessageResult(currentUser.Error);
+    }
+
+    [Authorize]
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<RequestResponse<ProductDTO>>> GetProduct([FromRoute] Guid id)
+    {
+        var currentUser = await GetCurrentUser();
+
+        return currentUser.Result != null ?
+            this.FromServiceResponse(await _productService.GetProduct(id, _userFileService, currentUser.Result)) :
+            this.ErrorMessageResult<ProductDTO>(currentUser.Error);
     }
 }
