@@ -150,4 +150,26 @@ public class ProductService : IProductService
 
         return ServiceResponse<PagedResponse<ProductDTO>>.ForSuccess(result);
     }
+
+    public async Task<ServiceResponse<PagedResponse<ProductDTO>>> GetMyProducts(PaginationSearchQueryParams pagination, UserDTO? requestingUser = default, CancellationToken cancellationToken = default)
+    {
+        if (requestingUser == null)
+        {
+            return ServiceResponse<PagedResponse<ProductDTO>>.FromError(CommonErrors.UserNotFound);
+        }
+
+        var result = await _repository.PageAsync(pagination, new ProductProjectionSpec(pagination.Search, requestingUser.Id), cancellationToken);
+
+        foreach (var productDTO in result.Data)
+        {
+            productDTO.FilePaths = new List<string>();
+            var files = await _repository.ListAsync(new UserFileProjectionSpec(productDTO.Id), cancellationToken);
+            foreach (var file in files)
+            {
+                productDTO.FilePaths.Add(file.Path);
+            }
+        }
+
+        return ServiceResponse<PagedResponse<ProductDTO>>.ForSuccess(result);
+    }
 }

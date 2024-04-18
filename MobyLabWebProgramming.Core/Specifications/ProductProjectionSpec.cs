@@ -22,6 +22,7 @@ public sealed class ProductProjectionSpec : BaseSpec<ProductProjectionSpec, Prod
         Price = e.Price,
         Description = e.Description,
         UserId = e.UserId,
+        Tags = e.ProductTags
     };
 
     public ProductProjectionSpec(bool orderByCreatedAt = true) : base(orderByCreatedAt)
@@ -44,5 +45,20 @@ public sealed class ProductProjectionSpec : BaseSpec<ProductProjectionSpec, Prod
         var searchExpr = $"%{search.Replace(" ", "%")}%";
 
         Query.Where(e => EF.Functions.ILike(e.Name, searchExpr) || EF.Functions.ILike(e.Description, searchExpr));
+    }
+
+    public ProductProjectionSpec(string? search, Guid id)
+    {
+        search = !string.IsNullOrWhiteSpace(search) ? search.Trim() : null;
+
+        if (search == null)
+        {
+            Query.Where(e => e.UserId == id);
+            return;
+        }
+
+        var searchExpr = $"%{search.Replace(" ", "%")}%";
+
+        Query.Where(e => (EF.Functions.ILike(e.Name, searchExpr) || EF.Functions.ILike(e.Description, searchExpr)) && e.UserId == id);
     }
 }

@@ -13,4 +13,6 @@ public interface IProductService
     public Task<ServiceResponse> DeleteProduct(Guid id, IUserFileService _userFileService, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 
     public Task<ServiceResponse<PagedResponse<ProductDTO>>> GetProducts(PaginationSearchQueryParams pagination, CancellationToken cancellationToken = default);
+
+    public Task<ServiceResponse<PagedResponse<ProductDTO>>> GetMyProducts(PaginationSearchQueryParams pagination, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 }
