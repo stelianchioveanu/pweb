@@ -63,4 +63,17 @@ public class AddressService : IAddressService
 
         return ServiceResponse.ForSuccess();
     }
+
+    public async Task<ServiceResponse<AddressDTO>> GetAddress(Guid id, UserDTO? requestingUser = default, CancellationToken cancellationToken = default)
+    {
+        if (requestingUser == null)
+        {
+            return ServiceResponse<AddressDTO>.FromError(CommonErrors.UserNotFound);
+        }
+
+        var result = await _repository.GetAsync(new AddressProjectionSpec(id), cancellationToken);
+
+
+        return ServiceResponse<AddressDTO>.ForSuccess(result);
+    }
 }

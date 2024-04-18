@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MobyLabWebProgramming.Core.DataTransferObjects;
+using MobyLabWebProgramming.Core.Requests;
 using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Infrastructure.Authorization;
 using MobyLabWebProgramming.Infrastructure.Extensions;
+using MobyLabWebProgramming.Infrastructure.Services.Implementations;
 using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
 
 namespace MobyLabWebProgramming.Backend.Controllers;
@@ -53,5 +55,16 @@ public class ProductController : AuthorizedController
         return currentUser.Result != null ?
             this.FromServiceResponse(await _productService.DeleteProduct(id, _userFileService, currentUser.Result)) :
             this.ErrorMessageResult(currentUser.Error);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<RequestResponse<PagedResponse<ProductDTO>>>> GetProducts([FromQuery] PaginationSearchQueryParams pagination)
+    {
+        var currentUser = await GetCurrentUser();
+
+        return currentUser.Result != null ?
+            this.FromServiceResponse(await _productService.GetProducts(pagination)) :
+            this.ErrorMessageResult<PagedResponse<ProductDTO>>(currentUser.Error);
     }
 }

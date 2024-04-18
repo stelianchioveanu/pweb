@@ -30,4 +30,15 @@ public class AddressController : AuthorizedController
             this.FromServiceResponse(await _addressService.UpdateAddress(address, currentUser.Result)) :
             this.ErrorMessageResult(currentUser.Error);
     }
+
+    [Authorize]
+    [HttpGet("{userId:guid}")]
+    public async Task<ActionResult<RequestResponse<AddressDTO>>> GetAddress([FromRoute] Guid userId)
+    {
+        var currentUser = await GetCurrentUser();
+
+        return currentUser.Result != null ?
+            this.FromServiceResponse(await _addressService.GetAddress(userId, currentUser.Result)) :
+            this.ErrorMessageResult<AddressDTO>(currentUser.Error);
+    }
 }
