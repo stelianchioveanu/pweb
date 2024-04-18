@@ -39,13 +39,30 @@ public class ProductService : IProductService
             return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Every input should have at least 1 character and the price should be higher then 0!", ErrorCodes.WrongInputs));
         }
 
-        await _repository.AddAsync(new Product
+        var newProduct = await _repository.AddAsync(new Product
         {
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
             UserId = requestingUser.Id,
         }, cancellationToken);
+
+        if (product.Tags != null && product.Tags.Count != 0)
+        {
+            foreach (var tag in product.Tags)
+            {
+                var entity = await _repository.GetAsync(new ProductTagSpec(tag), cancellationToken);
+                if (entity != null)
+                {
+                    if (entity.Products == null)
+                    {
+                        entity.Products = new HashSet<Product>();
+                    }
+                    entity.Products.Add(newProduct);
+                    await _repository.UpdateAsync(entity, cancellationToken);
+                }
+            }
+        }
 
         return ServiceResponse.ForSuccess();
     }
