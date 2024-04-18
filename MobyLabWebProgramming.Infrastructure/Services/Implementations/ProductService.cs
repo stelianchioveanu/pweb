@@ -87,8 +87,8 @@ public class ProductService : IProductService
         if (result != null)
         {
             result.FilePaths = new List<string>();
-            var file = await _repository.GetAsync(new UserFileProjectionSpec(id), cancellationToken);
-            if (file != null)
+            var files = await _repository.ListAsync(new UserFileProjectionSpec(id), cancellationToken);
+            foreach (var file in files)
             {
                 result.FilePaths.Add(file.Path);
             }
