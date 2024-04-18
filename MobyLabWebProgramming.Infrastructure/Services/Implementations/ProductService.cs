@@ -125,10 +125,10 @@ public class ProductService : IProductService
 
         foreach (var file in files)
         {
-            var res = _userFileService.DeleteFile(file, requestingUser);
+            _userFileService.DeleteFile(file, requestingUser, cancellationToken);
         }
 
-        var result = await _repository.DeleteAsync(new ProductSpec(id), cancellationToken);
+        await _repository.DeleteAsync(new ProductSpec(id), cancellationToken);
 
         return ServiceResponse.ForSuccess();
     }

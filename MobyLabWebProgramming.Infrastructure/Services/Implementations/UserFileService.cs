@@ -48,6 +48,6 @@ public class UserFileService : IUserFileService
 
     public ServiceResponse DeleteFile(UserFile file, UserDTO requestingUser, CancellationToken cancellationToken = default)
     {
-        return _fileRepository.DeleteFile(Path.Join(GetFileDirectory(requestingUser.Id), file.Name));
+        return _fileRepository.DeleteFile(Path.Join(GetFileDirectory(requestingUser.Id), file.Path));
     }
 }
