@@ -13,16 +13,7 @@ public interface IUserFileService
 {
     public const string UserFilesDirectory = "UserFiles";
 
-    /// <summary>
-    /// GetUserFiles gets the user files as pages from the database.
-    /// </summary>
-    //public Task<ServiceResponse<PagedResponse<UserFileDTO>>> GetUserFiles(PaginationSearchQueryParams pagination, CancellationToken cancellationToken = default);
-    /// <summary>
-    /// SaveFile saves a file on the file storage and also saves the path to the database for a requesting user.
-    /// </summary>
     public Task<ServiceResponse> SaveFile(IFormFile file, Product currProduct, UserDTO requestingUser, CancellationToken cancellationToken = default);
-    /// <summary>
-    /// GetFileDownload gets a file stream for a given file found by the id in the database.
-    /// </summary>
-    public Task<ServiceResponse<FileDTO>> GetFileDownload(Guid id, Product product, CancellationToken cancellationToken = default);
+
+    public ServiceResponse DeleteFile(UserFile file, UserDTO requestingUser, CancellationToken cancellationToken = default);
 }

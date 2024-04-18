@@ -43,4 +43,15 @@ public class ProductController : AuthorizedController
             this.FromServiceResponse(await _productService.GetProduct(id, _userFileService, currentUser.Result)) :
             this.ErrorMessageResult<ProductDTO>(currentUser.Error);
     }
+
+    [Authorize]
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult<RequestResponse>> DeleteProduct([FromRoute] Guid id)
+    {
+        var currentUser = await GetCurrentUser();
+
+        return currentUser.Result != null ?
+            this.FromServiceResponse(await _productService.DeleteProduct(id, _userFileService, currentUser.Result)) :
+            this.ErrorMessageResult(currentUser.Error);
+    }
 }

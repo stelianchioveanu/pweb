@@ -1,20 +1,13 @@
 ﻿using System.Net;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Win32;
-using MobyLabWebProgramming.Core.Constants;
 using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Entities;
-using MobyLabWebProgramming.Core.Enums;
 using MobyLabWebProgramming.Core.Errors;
-using MobyLabWebProgramming.Core.Requests;
 using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Core.Specifications;
-using MobyLabWebProgramming.Infrastructure.Authorization;
 using MobyLabWebProgramming.Infrastructure.Database;
 using MobyLabWebProgramming.Infrastructure.Repositories.Interfaces;
 using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
-using Org.BouncyCastle.Utilities.Net;
-using Serilog;
 
 namespace MobyLabWebProgramming.Infrastructure.Services.Implementations;
 
@@ -37,6 +30,18 @@ public class ProductService : IProductService
         if (product == null || product.Price == 0 || product.Name.IsNullOrEmpty() || product.Description.IsNullOrEmpty())
         {
             return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Every input should have at least 1 character and the price should be higher then 0!", ErrorCodes.WrongInputs));
+        }
+
+        string[] allowedExt = { ".jpeg", ".jpg", ".png" };
+
+        foreach (var file in product.Files)
+        {
+            var extension = Path.GetExtension(file.FileName);
+            if (!allowedExt.Contains(extension))
+            {
+                Console.WriteLine(Path.GetExtension(file.FileName));
+                return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "File should be jpeg/jpg/png!", ErrorCodes.WrongInputs));
+            }
         }
 
         var newProduct = await _repository.AddAsync(new Product
@@ -95,5 +100,36 @@ public class ProductService : IProductService
         }
 
         return ServiceResponse<ProductDTO>.ForSuccess(result);
+    }
+
+    public async Task<ServiceResponse> DeleteProduct(Guid id, IUserFileService _userFileService, UserDTO? requestingUser = default, CancellationToken cancellationToken = default)
+    {
+        if (requestingUser == null)
+        {
+            return ServiceResponse<ProductDTO>.FromError(CommonErrors.UserNotFound);
+        }
+
+        var product = await _repository.GetAsync(new ProductSpec(id), cancellationToken);
+
+        if (product == null)
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Product not found!", ErrorCodes.EntityNotFound));
+        }
+
+        if (requestingUser.Id != product.UserId && requestingUser.Role != Core.Enums.UserRoleEnum.Admin && requestingUser.Role != Core.Enums.UserRoleEnum.Personnel)
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.Unauthorized, "A product can be deleted olny by owner or admin/personnel!", ErrorCodes.CannotDelete));
+        }
+
+        var files = await _repository.ListAsync(new UserFileProjectionSpec(id), cancellationToken);
+
+        foreach (var file in files)
+        {
+            var res = _userFileService.DeleteFile(file, requestingUser);
+        }
+
+        var result = await _repository.DeleteAsync(new ProductSpec(id), cancellationToken);
+
+        return ServiceResponse.ForSuccess();
     }
 }
