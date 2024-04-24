@@ -176,6 +176,7 @@ public static class WebApplicationBuilderExtensions
             .AddTransient<IAddressService, AddressService>()
             .AddTransient<IProductTagService, ProductTagService>()
             .AddTransient<IProductService, ProductService>()
+            .AddTransient<IFeedbackService, FeedbackService>()
             .AddTransient<IMailService, MailService>();
 
         return builder;

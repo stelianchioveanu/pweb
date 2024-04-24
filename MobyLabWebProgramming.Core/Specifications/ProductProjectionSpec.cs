@@ -22,7 +22,7 @@ public sealed class ProductProjectionSpec : BaseSpec<ProductProjectionSpec, Prod
         Price = e.Price,
         Description = e.Description,
         UserId = e.UserId,
-        Tags = e.ProductTags
+        Tags = e.ProductTags.Select(x => x.Id).ToList(),
     };
 
     public ProductProjectionSpec(bool orderByCreatedAt = true) : base(orderByCreatedAt)
