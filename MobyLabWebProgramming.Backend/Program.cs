@@ -13,4 +13,5 @@ builder.AddCorsConfiguration()
 var app = builder.Build();
 
 app.ConfigureApplication();
+app.UseStaticFiles();
 app.Run();
