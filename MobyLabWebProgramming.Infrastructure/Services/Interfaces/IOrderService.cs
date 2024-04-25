@@ -4,9 +4,13 @@ using MobyLabWebProgramming.Core.Responses;
 
 namespace MobyLabWebProgramming.Infrastructure.Services.Interfaces;
 
-public interface IFeedbackService
+public interface IOrderService
 {
-    public Task<ServiceResponse> AddFeedback(FeedbackAddDTO feedback, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse> AddOrder(OrderAddDTO order, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 
-    public Task<ServiceResponse<PagedResponse<FeedbackDTO>>> GetFeedbacks(PaginationSearchQueryParams pagination, Guid ToUserId, CancellationToken cancellationToken = default);
+    public Task<ServiceResponse<PagedResponse<OrderDTO>>> GetOrders(PaginationSearchQueryParams pagination, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
+
+    public Task<ServiceResponse<PagedResponse<OrderDTO>>> GetMyOrders(PaginationSearchQueryParams pagination, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
+
+    public Task<ServiceResponse> DeleteOrder(Guid id, UserDTO? requestingUser = default, CancellationToken cancellationToken = default);
 }

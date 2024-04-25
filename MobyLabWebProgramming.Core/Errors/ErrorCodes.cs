@@ -20,5 +20,6 @@ public enum ErrorCodes
     MailSendFailed,
     TagAlreadyExists,
     WrongTag,
-    WrongInputs
+    WrongInputs,
+    OrderAlreadyExists
 }

@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Entities;
+using MobyLabWebProgramming.Core.Enums;
 using MobyLabWebProgramming.Core.Errors;
 using MobyLabWebProgramming.Core.Requests;
 using MobyLabWebProgramming.Core.Responses;
@@ -12,66 +13,95 @@ using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
 
 namespace MobyLabWebProgramming.Infrastructure.Services.Implementations;
 
-public class FeedbackService : IFeedbackService
+public class OrderService : IOrderService
 {
     private readonly IRepository<WebAppDatabaseContext> _repository;
 
-    public FeedbackService(IRepository<WebAppDatabaseContext> repository)
+    public OrderService(IRepository<WebAppDatabaseContext> repository)
     {
         _repository = repository;
     }
 
-    public async Task<ServiceResponse> AddFeedback(FeedbackAddDTO feedback, UserDTO? requestingUser = default, CancellationToken cancellationToken = default)
+    public async Task<ServiceResponse> AddOrder(OrderAddDTO order, UserDTO? requestingUser, CancellationToken cancellationToken = default)
     {
         if (requestingUser == null)
         {
             return ServiceResponse.FromError(CommonErrors.UserNotFound);
         }
 
-        if (feedback == null || feedback.Description.IsNullOrEmpty())
+        if (order == null)
         {
             return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Every input should have at least 1 character!", ErrorCodes.WrongInputs));
         }
 
-        if (feedback.Stars < 0 || feedback.Stars > 5)
+        var aux = await _repository.GetAsync(new OrderSpec(order.ProductId, requestingUser.Id), cancellationToken);
+
+        if (aux != null)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Stars should have a value between 0 and 5!", ErrorCodes.WrongInputs));
+            return ServiceResponse.FromError(new(HttpStatusCode.Conflict, "Order already exists!", ErrorCodes.OrderAlreadyExists));
         }
 
-        var entity = await _repository.GetAsync(new UserSpec(feedback.ToUserId), cancellationToken);
+        var entity = await _repository.GetAsync(new ProductSpec(order.ProductId), cancellationToken);
 
         if (entity == null)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "User not found!", ErrorCodes.EntityNotFound));
+            return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Product not found!", ErrorCodes.EntityNotFound));
         }
 
-        if (entity.Id == requestingUser.Id)
+        if (entity.UserId == requestingUser.Id)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "A user cannot provide feedback on his own!", ErrorCodes.CannotAdd));
+            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "A user cannot order his products!", ErrorCodes.CannotAdd));
         }
 
-        await _repository.AddAsync(new Feedback
+        await _repository.AddAsync(new Order
         {
-            Description = feedback.Description,
-            Stars = feedback.Stars,
-            FromUserId = requestingUser.Id,
-            ToUserId = entity.Id,
+            UserId = requestingUser.Id,
+            ProductId = order.ProductId,
         }, cancellationToken);
 
         return ServiceResponse.ForSuccess();
     }
 
-    public async Task<ServiceResponse<PagedResponse<FeedbackDTO>>> GetFeedbacks(PaginationSearchQueryParams pagination, Guid ToUserId, CancellationToken cancellationToken = default)
+    public async Task<ServiceResponse<PagedResponse<OrderDTO>>> GetOrders(PaginationSearchQueryParams pagination, UserDTO? requestingUser, CancellationToken cancellationToken = default)
     {
-        var entity = await _repository.GetAsync(new UserSpec(ToUserId), cancellationToken);
+        if (requestingUser == null)
+        {
+            return ServiceResponse<PagedResponse<OrderDTO>>.FromError(CommonErrors.UserNotFound);
+        }
+
+        var result = await _repository.PageAsync(pagination, new OrderProjectionSpec(pagination.Search, requestingUser.Id, false), cancellationToken);
+
+        return ServiceResponse<PagedResponse<OrderDTO>>.ForSuccess(result);
+    }
+
+    public async Task<ServiceResponse<PagedResponse<OrderDTO>>> GetMyOrders(PaginationSearchQueryParams pagination, UserDTO? requestingUser, CancellationToken cancellationToken = default)
+    {
+        if (requestingUser == null)
+        {
+            return ServiceResponse<PagedResponse<OrderDTO>>.FromError(CommonErrors.UserNotFound);
+        }
+
+        var result = await _repository.PageAsync(pagination, new OrderProjectionSpec(pagination.Search, requestingUser.Id, true), cancellationToken);
+
+        return ServiceResponse<PagedResponse<OrderDTO>>.ForSuccess(result);
+    }
+
+    public async Task<ServiceResponse> DeleteOrder(Guid id, UserDTO? requestingUser = default, CancellationToken cancellationToken = default)
+    {
+        var entity = await _repository.GetAsync(new OrderSpec(id), cancellationToken);
 
         if (entity == null)
         {
-            return ServiceResponse<PagedResponse<FeedbackDTO>>.FromError(new(HttpStatusCode.NotFound, "User not found!", ErrorCodes.EntityNotFound));
+            return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Order not found!", ErrorCodes.EntityNotFound));
         }
 
-        var result = await _repository.PageAsync(pagination, new FeedbackProjectionSpec(pagination.Search, ToUserId), cancellationToken);
+        if (requestingUser != null && requestingUser.Id != entity.UserId && requestingUser.Id != entity.Product.UserId)
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the owner of the product or the user who placed the order can remove it!", ErrorCodes.CannotDelete));
+        }
 
-        return ServiceResponse<PagedResponse<FeedbackDTO>>.ForSuccess(result);
+        await _repository.DeleteAsync<Order>(id, cancellationToken);
+
+        return ServiceResponse.ForSuccess();
     }
 }
