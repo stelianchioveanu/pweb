@@ -12,6 +12,7 @@ public sealed class OrderProjectionSpec : BaseSpec<OrderProjectionSpec, Order, O
     {
         UserId = e.User.Id,
         ProductId = e.Product.Id,
+        Id = e.Id,
     };
 
     public OrderProjectionSpec(bool orderByCreatedAt = true) : base(orderByCreatedAt)

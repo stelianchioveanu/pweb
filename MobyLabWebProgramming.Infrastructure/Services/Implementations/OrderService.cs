@@ -95,7 +95,14 @@ public class OrderService : IOrderService
             return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Order not found!", ErrorCodes.EntityNotFound));
         }
 
-        if (requestingUser != null && requestingUser.Id != entity.UserId && requestingUser.Id != entity.Product.UserId)
+        var entity2 = await _repository.GetAsync(new ProductSpec(entity.ProductId), cancellationToken);
+
+        if (entity2 == null)
+        {
+            return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Order not found!", ErrorCodes.EntityNotFound));
+        }
+
+        if (requestingUser != null && requestingUser.Id != entity.UserId && requestingUser.Id != entity2.UserId)
         {
             return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the owner of the product or the user who placed the order can remove it!", ErrorCodes.CannotDelete));
         }
