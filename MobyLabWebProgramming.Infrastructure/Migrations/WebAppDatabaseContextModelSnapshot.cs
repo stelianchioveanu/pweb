@@ -83,17 +83,17 @@ namespace MobyLabWebProgramming.Infrastructure.Migrations
                     b.Property<int>("Stars")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("ToUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FromUserId");
 
-                    b.HasIndex("ToUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Feedback");
                 });
@@ -289,15 +289,11 @@ namespace MobyLabWebProgramming.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MobyLabWebProgramming.Core.Entities.User", "ToUser")
+                    b.HasOne("MobyLabWebProgramming.Core.Entities.User", null)
                         .WithMany("ReceivedFeedbacks")
-                        .HasForeignKey("ToUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("FromUser");
-
-                    b.Navigation("ToUser");
                 });
 
             modelBuilder.Entity("MobyLabWebProgramming.Core.Entities.Order", b =>
@@ -333,7 +329,7 @@ namespace MobyLabWebProgramming.Infrastructure.Migrations
             modelBuilder.Entity("MobyLabWebProgramming.Core.Entities.UserFile", b =>
                 {
                     b.HasOne("MobyLabWebProgramming.Core.Entities.Product", "Product")
-                        .WithMany("UserFiles")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -359,8 +355,6 @@ namespace MobyLabWebProgramming.Infrastructure.Migrations
             modelBuilder.Entity("MobyLabWebProgramming.Core.Entities.Product", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("UserFiles");
                 });
 
             modelBuilder.Entity("MobyLabWebProgramming.Core.Entities.User", b =>

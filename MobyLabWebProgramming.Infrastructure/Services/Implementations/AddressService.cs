@@ -35,7 +35,7 @@ public class AddressService : IAddressService
 
         if (address == null || address.Number == 0 || address.StreetName.IsNullOrEmpty() || address.StreetName.IsNullOrEmpty() || address.PhoneNumber.IsNullOrEmpty())
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Every input should have at least 1 character!", ErrorCodes.WrongInputs));
+            return ServiceResponse.FromError(CommonErrors.WrongInputs);
         }
 
         var oldAddress = await _repository.GetAsync(new AddressSpec(requestingUser.Id), cancellationToken);

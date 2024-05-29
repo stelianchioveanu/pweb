@@ -9,6 +9,5 @@ public class Product  : BaseEntity
     public User User { get; set; } = default!;
 
     public ICollection<ProductTag> ProductTags { get; set; } = default!;
-    public ICollection<UserFile>? UserFiles { get; set; } = default!;
     public ICollection<Order> Orders { get; set; } = default!;
 }

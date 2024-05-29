@@ -1,10 +1,20 @@
 {
     "globals.welcome": "Bine ati venit!",
     "globals.login": "Autentificare",
+    "globals.register": "Inregistrare",
     "globals.logout": "Iesire",
     "globals.submit": "Trimite",
     "globals.email": "E-mail",
+    "globals.feedbacks": "Feedback-urile platformei",
+    "globals.products": "Produsele mele",
+    "globals.price": "Pret",
+    "globals.tags": "Tag-uri",
+    "globals.tag": "Tag",
+    "globals.id": "Id",
+    "globals.productTags": "Tag-uri de produse",
+    "globals.orders": "Comenzi",
     "globals.password": "Parola",
+    "globals.confPass": "Confirmare Parola",
     "globals.refresh": "Reincarca",
     "globals.loadingFailed": "Incarcarea a esaut",
     "globals.loading": "Se incarca",
@@ -18,8 +28,10 @@
     "globals.description": "Descriere",
     "globals.addBy": "Adaugat de", 
     "globals.createdAt": "Creat la",
+    "globals.updatedAt": "Modificat la",
     "globals.file": "Fisier",
     "globals.placeholders.textInput": "Va rugam sa introduceti {fieldName}",
     "globals.placeholders.selectInput": "Va rugam sa selectati {fieldName}",
-    "globals.validations.requiredField": "{fieldName} este camp obligatoriu!"
+    "globals.validations.requiredField": "{fieldName} este camp obligatoriu!",
+    "globals.validations.passwordsMustMatch": "Parolele trebuie sa coincida!"
 }

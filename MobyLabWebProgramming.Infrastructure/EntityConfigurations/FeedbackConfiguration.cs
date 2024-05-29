@@ -30,12 +30,5 @@ public class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
             .HasPrincipalKey(e => e.Id)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasOne(e => e.ToUser)
-            .WithMany(e => e.ReceivedFeedbacks)
-            .HasForeignKey(e => e.ToUserId)
-            .HasPrincipalKey(e => e.Id)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -26,7 +26,7 @@ public class ProductController : AuthorizedController
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<RequestResponse>> AddProduct([FromForm] ProductAddDTO product)
+    public async Task<ActionResult<RequestResponse>> AddProduct([FromBody] ProductAddDTO product)
     {
         var currentUser = await GetCurrentUser();
 

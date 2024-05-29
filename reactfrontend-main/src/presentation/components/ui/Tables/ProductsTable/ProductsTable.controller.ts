@@ -1,36 +1,27 @@
 import { useTableController } from "../Table.controller";
-import { useUserFileApi } from "@infrastructure/apis/api-management";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useProductApi } from "@infrastructure/apis/api-management";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { usePaginationController } from "../Pagination.controller";
-import { downloadDocument, openDocument } from "@infrastructure/utils/downloadUtils";
-import { UserFileDTO } from "@infrastructure/apis/client";
-
-const getFileContent = (filename?: string) => {
-    if (!filename) {
-        return;
-    }
-
-    if (filename.endsWith(".pdf")) {
-        return "application/pdf";
-    }
-}
 
 /**
  * This is controller hook manages the table state including the pagination and data retrieval from the backend.
  */
-export const useUserFileTableController = () => {
-    const { getUserFiles: { key: queryKey, query }, downloadUserFile: { query: download } } = useUserFileApi(); // Use the API hook.
+export const useProductsTableController = () => {
+    const { getProducts: { key: queryKey, query }, deleteProduct: { key: deleteProductKey, mutation: deleteProduct } } = useProductApi(); // Use the API hook.
     const queryClient = useQueryClient(); // Get the query client.
     const { page, pageSize, setPagination } = usePaginationController(); // Get the pagination state.
     const { data, isError, isLoading } = useQuery({
         queryKey: [queryKey, page, pageSize],
         queryFn: () => query({ page, pageSize })
     }); // Retrieve the table page from the backend via the query hook.
-    const downloadUserFile = useCallback((userFile: UserFileDTO) => download(userFile.id ?? '')
-        .then((data) => downloadDocument(data, userFile.name ?? '')), [download]); // Create the callback to download the user file.
-    const openUserFile = useCallback((userFile: UserFileDTO) => download(userFile.id ?? '')
-        .then((data) => userFile.name?.endsWith(".pdf") ? openDocument(data, getFileContent(userFile.name)) : openDocument(data)), [download]); // Create the callback to open the user file in another tab.
+    const { mutateAsync: deleteMutation } = useMutation({
+        mutationKey: [deleteProductKey],
+        mutationFn: deleteProduct
+    }); // Use a mutation to remove an entry.
+    const remove = useCallback(
+        (id: string) => deleteMutation(id).then(() => queryClient.invalidateQueries({ queryKey: [queryKey] })),
+        [queryClient, deleteMutation, queryKey]); // Create the callback to remove an entry.
 
     const tryReload = useCallback(
         () => queryClient.invalidateQueries({ queryKey: [queryKey] }),
@@ -44,7 +35,6 @@ export const useUserFileTableController = () => {
         pagedData: data?.response,
         isError,
         isLoading,
-        downloadUserFile,
-        openUserFile
+        remove
     };
 }

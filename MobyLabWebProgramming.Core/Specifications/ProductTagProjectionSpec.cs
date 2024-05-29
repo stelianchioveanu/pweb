@@ -11,7 +11,9 @@ public sealed class ProductTagProjectionSpec : BaseSpec<ProductTagProjectionSpec
     protected override Expression<Func<ProductTag, ProductTagDTO>> Spec => e => new()
     {
         Id = e.Id,
-        Tag = e.Tag
+        Tag = e.Tag,
+        CreatedAt = e.CreatedAt.ToString("g"),
+        UpdatedAt = e.CreatedAt.ToString("g"),
     };
 
     public ProductTagProjectionSpec(bool orderByCreatedAt = true) : base(orderByCreatedAt)

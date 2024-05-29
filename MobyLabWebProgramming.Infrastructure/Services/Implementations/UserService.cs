@@ -60,7 +60,7 @@ public class UserService : IUserService
 
         if (result.Password != login.Password) // Verify if the password hash of the request is the same as the one in the database.
         {
-            return ServiceResponse<LoginResponseDTO>.FromError(new(HttpStatusCode.BadRequest, "Wrong password!", ErrorCodes.WrongPassword));
+            return ServiceResponse<LoginResponseDTO>.FromError(CommonErrors.WrongPassword);
         }
 
         var user = new UserDTO
@@ -85,14 +85,14 @@ public class UserService : IUserService
     {
         if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin) // Verify who can add the user, you can change this however you se fit.
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin can add users!", ErrorCodes.CannotAdd));
+            return ServiceResponse.FromError(CommonErrors.CannotAddUsers);
         }
 
         var result = await _repository.GetAsync(new UserSpec(user.Email), cancellationToken);
 
         if (result != null)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Conflict, "The user already exists!", ErrorCodes.UserAlreadyExists));
+            return ServiceResponse.FromError(CommonErrors.UserAlreadyExists);
         }
 
         await _repository.AddAsync(new User
@@ -112,7 +112,7 @@ public class UserService : IUserService
     {
         if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Id != user.Id) // Verify who can add the user, you can change this however you se fit.
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or the own user can update the user!", ErrorCodes.CannotUpdate));
+            return ServiceResponse.FromError(CommonErrors.CannotUpdateUsers);
         }
 
         var entity = await _repository.GetAsync(new UserSpec(user.Id), cancellationToken);
@@ -132,7 +132,7 @@ public class UserService : IUserService
     {
         if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Id != id) // Verify who can add the user, you can change this however you se fit.
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or the own user can delete the user!", ErrorCodes.CannotDelete));
+            return ServiceResponse.FromError(CommonErrors.CannotDeleteUsers);
         }
 
         await _repository.DeleteAsync<User>(id, cancellationToken); // Delete the entity.
@@ -146,7 +146,7 @@ public class UserService : IUserService
 
         if (register == null || register.Email.IsNullOrEmpty() || register.Name.IsNullOrEmpty() || register.Password.IsNullOrEmpty())
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Every input should have at least 1 character!", ErrorCodes.WrongInputs));
+            return ServiceResponse.FromError(CommonErrors.WrongInputs);
         }
 
         if (result != null)

@@ -30,47 +30,28 @@ public class FeedbackService : IFeedbackService
 
         if (feedback == null || feedback.Description.IsNullOrEmpty())
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Every input should have at least 1 character!", ErrorCodes.WrongInputs));
+            return ServiceResponse.FromError(CommonErrors.WrongInputs);
         }
 
         if (feedback.Stars < 0 || feedback.Stars > 5)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Stars should have a value between 0 and 5!", ErrorCodes.WrongInputs));
-        }
-
-        var entity = await _repository.GetAsync(new UserSpec(feedback.ToUserId), cancellationToken);
-
-        if (entity == null)
-        {
-            return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "User not found!", ErrorCodes.EntityNotFound));
-        }
-
-        if (entity.Id == requestingUser.Id)
-        {
-            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "A user cannot provide feedback on his own!", ErrorCodes.CannotAdd));
+            return ServiceResponse.FromError(CommonErrors.WrongInputs);
         }
 
         await _repository.AddAsync(new Feedback
         {
             Description = feedback.Description,
             Stars = feedback.Stars,
-            FromUserId = requestingUser.Id,
-            ToUserId = entity.Id,
+            FromUserId = requestingUser.Id
         }, cancellationToken);
 
         return ServiceResponse.ForSuccess();
     }
 
-    public async Task<ServiceResponse<PagedResponse<FeedbackDTO>>> GetFeedbacks(PaginationSearchQueryParams pagination, Guid ToUserId, CancellationToken cancellationToken = default)
+    public async Task<ServiceResponse<PagedResponse<FeedbackDTO>>> GetFeedbacks(PaginationSearchQueryParams pagination, CancellationToken cancellationToken = default)
     {
-        var entity = await _repository.GetAsync(new UserSpec(ToUserId), cancellationToken);
 
-        if (entity == null)
-        {
-            return ServiceResponse<PagedResponse<FeedbackDTO>>.FromError(new(HttpStatusCode.NotFound, "User not found!", ErrorCodes.EntityNotFound));
-        }
-
-        var result = await _repository.PageAsync(pagination, new FeedbackProjectionSpec(pagination.Search, ToUserId), cancellationToken);
+        var result = await _repository.PageAsync(pagination, new FeedbackProjectionSpec(pagination.Search), cancellationToken);
 
         return ServiceResponse<PagedResponse<FeedbackDTO>>.ForSuccess(result);
     }

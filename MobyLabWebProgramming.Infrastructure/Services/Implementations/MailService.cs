@@ -44,7 +44,7 @@ public class MailService : IMailService
         }
         catch
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.ServiceUnavailable, "Mail couldn't be send!", ErrorCodes.MailSendFailed));
+            return ServiceResponse.FromError(CommonErrors.MailSendFailed);
         }
 
         return ServiceResponse.ForSuccess();

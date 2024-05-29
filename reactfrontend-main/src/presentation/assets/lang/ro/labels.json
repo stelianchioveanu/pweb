@@ -6,5 +6,7 @@
     "labels.no": "Nu",
     "labels.actions": "Actiuni",
     "labels.addUser": "Adauga utilizator",
+    "labels.addTag": "Adauga tag",
+    "labels.addProduct": "Adauga produs",
     "labels.addUserFile": "Adauga fisier"
 }

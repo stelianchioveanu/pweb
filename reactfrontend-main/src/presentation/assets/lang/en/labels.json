@@ -6,5 +6,7 @@
     "labels.no": "No",
     "labels.actions": "Actions",
     "labels.addUser": "Add user",
+    "labels.addTag": "Add tag",
+    "labels.addProduct": "Add product",
     "labels.addUserFile": "Add file"
 }

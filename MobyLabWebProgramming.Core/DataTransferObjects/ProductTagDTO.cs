@@ -10,4 +10,6 @@ public class ProductTagDTO
 {
     public Guid Id { get; set; }
     public string Tag { get; set; } = default!;
+    public string CreatedAt { get; set; } = default!;
+    public string UpdatedAt { get; set; } = default!;
 }

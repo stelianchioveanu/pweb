@@ -13,6 +13,16 @@ export const useAppRouter = () => {
     [navigate]
   );
 
+  const redirectToLogin = useCallback(
+    () => navigate(AppRoute.Login),
+    [navigate]
+  );
+
+  const redirectToRegister = useCallback(
+    () => navigate(AppRoute.Register),
+    [navigate]
+  );
+
   const redirectToUsers = useCallback(
     () =>
       navigate({
@@ -33,6 +43,8 @@ export const useAppRouter = () => {
     redirectToHome,
     redirectToUsers,
     redirectToUsersFiles,
+    redirectToLogin,
+    redirectToRegister,
     navigate
   };
 };

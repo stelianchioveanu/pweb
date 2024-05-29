@@ -23,7 +23,7 @@ public class FeedbackController : AuthorizedController
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<RequestResponse>> AddFeedback([FromForm] FeedbackAddDTO feedback)
+    public async Task<ActionResult<RequestResponse>> AddFeedback([FromBody] FeedbackAddDTO feedback)
     {
         var currentUser = await GetCurrentUser();
 
@@ -34,12 +34,12 @@ public class FeedbackController : AuthorizedController
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<RequestResponse<PagedResponse<FeedbackDTO>>>> GetFeedbacks([FromQuery] PaginationSearchQueryParams pagination, [FromQuery] Guid toUser)
+    public async Task<ActionResult<RequestResponse<PagedResponse<FeedbackDTO>>>> GetFeedbacks([FromQuery] PaginationSearchQueryParams pagination)
     {
         var currentUser = await GetCurrentUser();
 
         return currentUser.Result != null ?
-            this.FromServiceResponse(await _feedbackService.GetFeedbacks(pagination, toUser)) :
+            this.FromServiceResponse(await _feedbackService.GetFeedbacks(pagination)) :
             this.ErrorMessageResult<PagedResponse<FeedbackDTO>>(currentUser.Error);
     }
 }

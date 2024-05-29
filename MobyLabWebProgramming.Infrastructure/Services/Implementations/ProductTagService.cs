@@ -32,19 +32,19 @@ public class ProductTagService : IProductTagService
 
         if (requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or personnel can add product tags!", ErrorCodes.CannotAdd));
+            return ServiceResponse.FromError(CommonErrors.CannotAddProductsTags);
         }
 
         if (tag == null || tag.Tag.IsNullOrEmpty())
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "The tag should have at least 1 character!", ErrorCodes.WrongTag));
+            return ServiceResponse.FromError(CommonErrors.WrongTag);
         }
 
         var result = await _repository.GetAsync(new ProductTagSpec(tag.Tag), cancellationToken);
 
         if (result != null)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Conflict, "Tag already exists!", ErrorCodes.TagAlreadyExists));
+            return ServiceResponse.FromError(CommonErrors.TagAlreadyExists);
         }
 
         await _repository.AddAsync(new ProductTag
@@ -64,7 +64,7 @@ public class ProductTagService : IProductTagService
 
         if (requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the admin or personnel can delete product tags!", ErrorCodes.CannotAdd));
+            return ServiceResponse.FromError(CommonErrors.CannotDeleteProductsTags);
         }
 
         await _repository.DeleteAsync<ProductTag>(id, cancellationToken);

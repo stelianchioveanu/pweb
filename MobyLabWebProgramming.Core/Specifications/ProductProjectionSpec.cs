@@ -21,8 +21,14 @@ public sealed class ProductProjectionSpec : BaseSpec<ProductProjectionSpec, Prod
         Name = e.Name,
         Price = e.Price,
         Description = e.Description,
-        UserId = e.UserId,
-        Tags = e.ProductTags.Select(x => x.Id).ToList(),
+        User = new UserDTO
+        {
+            Email = e.User.Email,
+            Id = e.User.Id,
+            Name = e.User.Name,
+            Role = e.User.Role,
+        },
+        Tags = e.ProductTags.Select(x => x.Tag).ToList(),
     };
 
     public ProductProjectionSpec(bool orderByCreatedAt = true) : base(orderByCreatedAt)

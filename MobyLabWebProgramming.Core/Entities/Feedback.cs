@@ -6,6 +6,4 @@ public class Feedback : BaseEntity
     public int Stars { get; set; } = default!;
     public Guid FromUserId { get; set; }
     public User FromUser { get; set; } = default!;
-    public Guid ToUserId { get; set; }
-    public User ToUser { get; set; } = default!;
 }

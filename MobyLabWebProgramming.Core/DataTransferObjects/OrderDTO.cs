@@ -2,8 +2,7 @@
 
 public class OrderDTO
 {
-    public Guid ProductId { get; set; }
-    public Guid UserId { get; set; }
-
+    public ProductDTO Product { get; set; } = default!;
+    public UserDTO User { get; set; } = default!;
     public Guid Id { get; set; }
 }

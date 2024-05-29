@@ -19,18 +19,17 @@ public sealed class FeedbackProjectionSpec : BaseSpec<FeedbackProjectionSpec, Fe
     {
     }
 
-    public FeedbackProjectionSpec(string? search, Guid id)
+    public FeedbackProjectionSpec(string? search)
     {
         search = !string.IsNullOrWhiteSpace(search) ? search.Trim() : null;
 
         if (search == null)
         {
-            Query.Where(e => e.ToUserId == id);
             return;
         }
 
         var searchExpr = $"%{search.Replace(" ", "%")}%";
 
-        Query.Where(e => EF.Functions.ILike(e.Description, searchExpr) && e.ToUserId == id);
+        Query.Where(e => EF.Functions.ILike(e.Description, searchExpr));
     }
 }

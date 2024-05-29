@@ -7,19 +7,21 @@ import {
     Grid,
     Stack,
     OutlinedInput,
+    Select,
+    MenuItem
 } from "@mui/material";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useUserFileAddFormController } from "./UserFileAddForm.controller";
+import { useTagAddFormController } from "./TagAddForm.controller";
 import { isEmpty, isUndefined } from "lodash";
-import { UploadButton } from "@presentation/components/ui/UploadButton";
+import { UserRoleEnum } from "@infrastructure/apis/client";
 
 /**
- * Here we declare the user file add form component.
+ * Here we declare the user add form component.
  * This form may be used in modals so the onSubmit callback could close the modal on completion.
  */
-export const UserFileAddForm = (props: { onSubmit?: () => void }) => {
+export const TagAddForm = (props: { onSubmit?: () => void }) => {
     const { formatMessage } = useIntl();
-    const { state, actions, computed } = useUserFileAddFormController(props.onSubmit);
+    const { state, actions, computed } = useTagAddFormController(props.onSubmit); // Use the controller.
 
     return <form onSubmit={actions.handleSubmit(actions.submit)}> {/* Wrap your form into a form tag and use the handle submit callback to validate the form and call the data submission. */}
         <Stack spacing={4} style={{ width: "100%" }}>
@@ -28,48 +30,27 @@ export const UserFileAddForm = (props: { onSubmit?: () => void }) => {
                     <Grid container item direction="column" xs={6} md={6}>
                         <FormControl
                             fullWidth
-                            error={!isUndefined(state.errors.description)}
+                            error={!isUndefined(state.errors.tag)}
                         > {/* Wrap the input into a form control and use the errors to show the input invalid if needed. */}
-                            <FormLabel>
-                                <FormattedMessage id="globals.description" />
+                            <FormLabel required>
+                                <FormattedMessage id="globals.tag" />
                             </FormLabel> {/* Add a form label to indicate what the input means. */}
                             <OutlinedInput
-                                {...actions.register("description")} // Bind the form variable to the UI input.
+                                {...actions.register("tag")} // Bind the form variable to the UI input.
                                 placeholder={formatMessage(
                                     { id: "globals.placeholders.textInput" },
                                     {
                                         fieldName: formatMessage({
-                                            id: "globals.description",
+                                            id: "globals.tag",
                                         }),
                                     })}
                                 autoComplete="none"
                             /> {/* Add a input like a textbox shown here. */}
                             <FormHelperText
-                                hidden={isUndefined(state.errors.description)}
+                                hidden={isUndefined(state.errors.tag)}
                             >
-                                {state.errors.description?.message}
+                                {state.errors.tag?.message}
                             </FormHelperText> {/* Add a helper text that is shown then the input has a invalid value. */}
-                        </FormControl>
-                    </Grid>
-                    <Grid container item direction="column" xs={6} md={6}>
-                        <FormControl
-                            fullWidth
-                            error={!isUndefined(state.errors.file)}
-                        >
-                            <FormLabel required>
-                                <FormattedMessage id="globals.file" />
-                            </FormLabel>
-                            <UploadButton // You can add inputs via buttons and wrap them into other components to show errors.
-                                onUpload={actions.setFile}
-                                isLoading={computed.isSubmitting}
-                                disabled={computed.isSubmitting}
-                                text={formatMessage({ id: "labels.addUserFile" })}
-                                acceptFileType="*/*" />
-                            <FormHelperText
-                                hidden={isUndefined(state.errors.file)}
-                            >
-                                {state.errors.file?.message}
-                            </FormHelperText>
                         </FormControl>
                     </Grid>
                 </Grid>

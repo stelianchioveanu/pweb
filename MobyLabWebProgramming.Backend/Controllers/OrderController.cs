@@ -23,7 +23,7 @@ public class OrderController : AuthorizedController
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<RequestResponse>> AddOrder([FromForm] OrderAddDTO order)
+    public async Task<ActionResult<RequestResponse>> AddOrder([FromBody] OrderAddDTO order)
     {
         var currentUser = await GetCurrentUser();
 

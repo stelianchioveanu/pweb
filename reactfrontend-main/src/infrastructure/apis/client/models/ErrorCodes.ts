@@ -27,7 +27,11 @@ export const ErrorCodes = {
     CannotAdd: 'CannotAdd',
     CannotUpdate: 'CannotUpdate',
     CannotDelete: 'CannotDelete',
-    MailSendFailed: 'MailSendFailed'
+    MailSendFailed: 'MailSendFailed',
+    TagAlreadyExists: 'TagAlreadyExists',
+    WrongTag: 'WrongTag',
+    WrongInputs: 'WrongInputs',
+    OrderAlreadyExists: 'OrderAlreadyExists'
 } as const;
 export type ErrorCodes = typeof ErrorCodes[keyof typeof ErrorCodes];
 

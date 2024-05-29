@@ -10,8 +10,28 @@ public sealed class OrderProjectionSpec : BaseSpec<OrderProjectionSpec, Order, O
 {
     protected override Expression<Func<Order, OrderDTO>> Spec => e => new()
     {
-        UserId = e.User.Id,
-        ProductId = e.Product.Id,
+        User = new UserDTO
+        {
+            Name = e.User.Name,
+            Email = e.User.Email,
+            Id = e.User.Id,
+            Role = e.User.Role,
+        },
+        Product = new ProductDTO
+        {
+            Price = e.Product.Price,
+            Description = e.Product.Description,
+            Id = e.Product.Id,
+            Name = e.Product.Name,
+            Tags = e.Product.ProductTags.Select(x => x.Tag).ToList(),
+            User = new UserDTO
+            {
+                Email = e.Product.User.Email,
+                Id = e.Product.User.Id,
+                Role = e.Product.User.Role,
+                Name = e.Product.User.Name,
+            }
+        },
         Id = e.Id,
     };
 

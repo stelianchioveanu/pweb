@@ -1,5 +1,6 @@
 {
     "notifications.messages.authenticationSuccess": "V-ati autentificat cu succes!",
+    "notifications.messages.registerSuccess": "V-ati inregistrat cu succes!",
     "notifications.errors.sessionExpired": "Sesiunea a expirat, vă rugăm să vă conectați din nou!",
     "notifications.errors.unknownHappened": "A apărut o eroare necunoscută!",
     "notifications.errors.networkError": "A apărut o eroare de rețea, vă rugăm să vă verificați conexiunea la internet!",

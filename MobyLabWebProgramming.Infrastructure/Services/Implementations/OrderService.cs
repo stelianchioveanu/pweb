@@ -31,26 +31,26 @@ public class OrderService : IOrderService
 
         if (order == null)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.BadRequest, "Every input should have at least 1 character!", ErrorCodes.WrongInputs));
+            return ServiceResponse.FromError(CommonErrors.WrongInputs);
         }
 
         var aux = await _repository.GetAsync(new OrderSpec(order.ProductId, requestingUser.Id), cancellationToken);
 
         if (aux != null)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Conflict, "Order already exists!", ErrorCodes.OrderAlreadyExists));
+            return ServiceResponse.FromError(CommonErrors.OrderAlreadyExists);
         }
 
         var entity = await _repository.GetAsync(new ProductSpec(order.ProductId), cancellationToken);
 
         if (entity == null)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Product not found!", ErrorCodes.EntityNotFound));
+            return ServiceResponse.FromError(CommonErrors.ProductNotFound);
         }
 
         if (entity.UserId == requestingUser.Id)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "A user cannot order his products!", ErrorCodes.CannotAdd));
+            return ServiceResponse.FromError(CommonErrors.CannotAddOrder);
         }
 
         await _repository.AddAsync(new Order
@@ -92,19 +92,19 @@ public class OrderService : IOrderService
 
         if (entity == null)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Order not found!", ErrorCodes.EntityNotFound));
+            return ServiceResponse.FromError(CommonErrors.OrderNotFound);
         }
 
         var entity2 = await _repository.GetAsync(new ProductSpec(entity.ProductId), cancellationToken);
 
         if (entity2 == null)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Order not found!", ErrorCodes.EntityNotFound));
+            return ServiceResponse.FromError(CommonErrors.OrderNotFound);
         }
 
         if (requestingUser != null && requestingUser.Id != entity.UserId && requestingUser.Id != entity2.UserId)
         {
-            return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only the owner of the product or the user who placed the order can remove it!", ErrorCodes.CannotDelete));
+            return ServiceResponse.FromError(CommonErrors.CannotDeleteOrder);
         }
 
         await _repository.DeleteAsync<Order>(id, cancellationToken);
